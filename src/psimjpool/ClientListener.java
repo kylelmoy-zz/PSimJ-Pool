@@ -13,16 +13,16 @@ class ClientListener implements Runnable {
 	private Thread thread;
 	private boolean run;
 	private PoolKey key = PoolKey.DEFAULT_KEY;
-	
-	ClientListener (int port, NodeListener listener) {
+
+	ClientListener(int port, NodeListener listener) {
 		listenPort = port;
 		this.nodeListener = listener;
 	}
-	
-	public void useAuthentication (PoolKey key) {
+
+	public void useAuthentication(PoolKey key) {
 		this.key = key;
 	}
-	
+
 	@Override
 	public void run() {
 		run = true;
@@ -34,12 +34,13 @@ class ClientListener implements Runnable {
 						NodeSocket client = new NodeSocket(serverSocket.accept());
 
 						List<NodeSocket> nodes = nodeListener.getNodes();
-						
+
 						if (!key.validate(client)) {
 							client.os.writeInt(Pool.MSG_REFUSE);
 						}
-						
-						// Receive node count request, exclude the requester themselves
+
+						// Receive node count request, exclude the requester
+						// themselves
 						int ncount = client.is.readInt() - 1;
 
 						if (ncount > nodes.size()) {
@@ -62,17 +63,17 @@ class ClientListener implements Runnable {
 						int poolSize = requestPool.size();
 						for (int i = 0; i < poolSize; i++) {
 							NodeSocket node = requestPool.get(i);
-							
+
 							// Tell nodes to start
 							node.os.writeInt(Pool.MSG_START);
-							
+
 							// Send this node's rank
 							node.os.writeInt(i);
-							
+
 							// Send total pool size
 							node.os.writeInt(poolSize);
 						}
-						
+
 						// Send IP list
 						for (int i = 0; i < poolSize; i++) {
 							byte[] buf = requestPool.get(i).ip.getBytes();
@@ -81,7 +82,7 @@ class ClientListener implements Runnable {
 								node.os.write(buf);
 							}
 						}
-						
+
 						// Done
 						client.close();
 					} catch (IOException e) {

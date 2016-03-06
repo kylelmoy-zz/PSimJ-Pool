@@ -12,29 +12,32 @@ import psimj.network.NodeSocket;
  * @author Kyle Moy
  *
  */
-class PoolKey {
-	public static final PoolKey DEFAULT_KEY = new PoolKey(new byte[] {0, 1, 2, 4, 8, 16, 32, 64});
+public class PoolKey {
+	public static final PoolKey DEFAULT_KEY = new PoolKey(new byte[] { 0, 1, 2, 4, 8, 16, 32, 64 });
 	private final byte[] key;
-	
+
 	/**
 	 * Constructs a PoolKey from a byte array
+	 * 
 	 * @param byteArray
 	 */
-	PoolKey (byte[] byteArray) {
+	public PoolKey(byte[] byteArray) {
 		this.key = byteArray;
 	}
-	
+
 	/**
 	 * Constructs a PoolKey from a file
+	 * 
 	 * @param path
 	 * @throws IOException
 	 */
-	PoolKey (String path) throws IOException {
+	public PoolKey(String path) throws IOException {
 		key = Files.readAllBytes(Paths.get(path));
 	}
-	
+
 	/**
 	 * Sends this key over a NodeSocket
+	 * 
 	 * @param socket
 	 * @throws IOException
 	 */
@@ -42,9 +45,10 @@ class PoolKey {
 		socket.os.writeInt(key.length);
 		socket.os.write(key);
 	}
-	
+
 	/**
 	 * Validates a key over a NodeSocket
+	 * 
 	 * @param socket
 	 * @return true if the received key matches this PoolKey
 	 * @throws IOException

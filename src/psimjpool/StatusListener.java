@@ -115,7 +115,8 @@ class ClientHandler extends Thread {
 
 			// Test for GET request
 			if (request.startsWith("GET")) {
-				String req = request.substring(4, request.length() - 9).trim();
+				// String req = request.substring(4, request.length() -
+				// 9).trim();
 
 				// Print some JSON
 				List<NodeSocket> nodes = pool.getNodes();
@@ -128,7 +129,7 @@ class ClientHandler extends Thread {
 					attr.put("port", node.socket.getPort());
 					list.add(attr);
 				}
-				
+
 				obj.put("nodes", list);
 				out.print(buildResponseHeader(200, "OK", "application/json"));
 				out.print(obj.toJSONString());

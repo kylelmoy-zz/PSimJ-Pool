@@ -28,11 +28,11 @@ class NodeListener implements java.lang.Runnable {
 		this.port = port;
 		nodePool = new ArrayList<NodeSocket>();
 	}
-	
-	public void useAuthentication (PoolKey key) {
+
+	public void useAuthentication(PoolKey key) {
 		this.key = key;
 	}
-	
+
 	@Override
 	public void run() {
 		try {

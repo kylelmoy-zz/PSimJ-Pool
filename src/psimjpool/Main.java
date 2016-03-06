@@ -14,7 +14,7 @@ public class Main {
 				System.err.println("Not enough args for host!");
 				return;
 			}
-			
+
 			int nodePort = Integer.parseInt(args[1]);
 			int listenPort = Integer.parseInt(args[2]);
 			int wwwPort = Integer.parseInt(args[3]);
@@ -28,7 +28,7 @@ public class Main {
 				System.err.println("Not enough args for node!");
 				return;
 			}
-			
+
 			String host = args[1];
 			int port = Integer.parseInt(args[2]);
 			PoolKey key = null;
@@ -41,5 +41,4 @@ public class Main {
 		}
 	}
 
-	
 }

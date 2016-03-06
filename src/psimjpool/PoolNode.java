@@ -14,7 +14,7 @@ class PoolNode {
 		if (key == null) {
 			key = PoolKey.DEFAULT_KEY;
 		}
-		
+
 		// Try connecting to host
 		while (true) {
 			try {
@@ -28,7 +28,7 @@ class PoolNode {
 						int msg = 0;
 						while (msg != Pool.MSG_START) {
 							msg = pool.is.readInt();
-							switch(msg) {
+							switch (msg) {
 							case Pool.MSG_START:
 								break;
 							case Pool.MSG_HEARTBEAT:
@@ -39,7 +39,7 @@ class PoolNode {
 								System.exit(0);
 							}
 						}
-						
+
 						try {
 							// Initialize communications with all nodes
 							Communicator comm = Pool.buildCommunicator(pool);
@@ -48,9 +48,9 @@ class PoolNode {
 							e.printStackTrace();
 						}
 					}
-					
+
 				} catch (IOException e) {
-					//Connection lost
+					// Connection lost
 					System.out.println("Connection lost.");
 				}
 				pool.close();

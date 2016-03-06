@@ -14,7 +14,7 @@ class PoolHost {
 		System.out.println("Requests port: " + listenPort);
 		ClientListener clientListener = new ClientListener(listenPort, nodeListener);
 		clientListener.start();
-		
+
 		if (key != null) {
 			System.out.println("Use Authentication: YES");
 			nodeListener.useAuthentication(key);
@@ -22,11 +22,10 @@ class PoolHost {
 		} else {
 			System.out.println("Use Authentication: NO");
 		}
-		
-		//clientListener.stop();
-		//nodeListener.stop();
-		//www.stop();
-	}
 
+		// clientListener.stop();
+		// nodeListener.stop();
+		// www.stop();
+	}
 
 }
