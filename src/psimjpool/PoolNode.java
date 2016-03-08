@@ -46,9 +46,9 @@ class PoolNode {
 							comm.runTask(null);
 						} catch (Exception e) {
 							e.printStackTrace();
+							break;
 						}
 					}
-
 				} catch (IOException e) {
 					// Connection lost
 					System.out.println("Connection lost.");
