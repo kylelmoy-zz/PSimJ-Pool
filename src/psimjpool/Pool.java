@@ -15,12 +15,13 @@ import psimj.network.NodeSocket;
  *
  */
 public class Pool {
-	public static final int ALL = Integer.MIN_VALUE;
+	public static final int ALL = -1;
 
 	static final int MSG_REFUSE = -2;
 	static final int MSG_QUIT = -1;
 	static final int MSG_HEARTBEAT = 0;
 	static final int MSG_START = 1;
+	static final int MSG_ACCEPT = 2;
 
 	private final String address;
 	private final int port;
@@ -56,8 +57,8 @@ public class Pool {
 	 * @throws IOException
 	 */
 	public Communicator requestCommunicator(int numNodes) throws IOException {
-		if (numNodes <= 1) {
-			System.err.println("Request must be greater than 1.");
+		if (numNodes == 0 || numNodes == 1) {
+			System.err.println("Request must be greater than 0.");
 			return null;
 		}
 

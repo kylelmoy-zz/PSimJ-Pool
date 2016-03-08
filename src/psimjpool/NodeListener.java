@@ -60,6 +60,18 @@ class NodeListener implements java.lang.Runnable {
 
 					// Verify key before adding to pool
 					if (key.validate(node)) {
+						node.os.writeInt(Pool.MSG_ACCEPT);
+						
+						// Read core count
+						node.cores = node.is.readInt();
+						// Read os name
+						int size = node.is.readInt();
+						byte[] buf = new byte[size];
+						if (size > 0) {
+							node.is.readFully(buf);
+							node.osName = new String(buf);
+						}
+						
 						nodePool.add(node);
 					} else {
 						node.os.writeInt(Pool.MSG_REFUSE);

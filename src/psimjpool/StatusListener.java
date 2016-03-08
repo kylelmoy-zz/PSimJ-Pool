@@ -2,6 +2,9 @@ package psimjpool;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,6 +15,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -29,7 +34,7 @@ import psimj.network.NodeSocket;
 class StatusListener implements java.lang.Runnable {
 	private static volatile boolean run = true;
 	public int port;
-
+	public static String root = "./www/";
 	ServerSocket serverSocket;
 	Thread thread;
 	NodeListener pool;
@@ -115,25 +120,53 @@ class ClientHandler extends Thread {
 
 			// Test for GET request
 			if (request.startsWith("GET")) {
-				// String req = request.substring(4, request.length() -
-				// 9).trim();
-
-				// Print some JSON
-				List<NodeSocket> nodes = pool.getNodes();
-				JSONObject obj = new JSONObject();
-				obj.put("poolname", InetAddress.getLocalHost().getCanonicalHostName());
-				JSONArray list = new JSONArray();
-				for (NodeSocket node : nodes) {
-					JSONObject attr = new JSONObject();
-					attr.put("name", node.socket.getInetAddress().getCanonicalHostName());
-					attr.put("port", node.socket.getPort());
-					list.add(attr);
+				String req = request.substring(4, request.length() - 9).trim();
+				if (req.contains(".json")){
+					// Print some JSON
+					List<NodeSocket> nodes = pool.getNodes();
+					JSONObject obj = new JSONObject();
+					obj.put("poolname", InetAddress.getLocalHost().getCanonicalHostName());
+					JSONArray list = new JSONArray();
+					for (NodeSocket node : nodes) {
+						JSONObject attr = new JSONObject();
+						attr.put("name", node.socket.getInetAddress().getHostAddress());
+						attr.put("port", node.socket.getPort());
+						attr.put("cores", node.cores);
+						attr.put("os", node.osName);
+						list.add(attr);
+					}
+	
+					obj.put("nodes", list);
+					out.print(buildResponseHeader(200, "OK", "application/json"));
+					out.print(obj.toJSONString());
+				} else {
+					//Trim trailing file separator
+					if (req.endsWith("/")) req.substring(0, req.length() - 1);
+					
+					//Get request location
+					File f = new File(StatusListener.root + req);
+					File fIndex =  new File(StatusListener.root + req + "/index.html");
+					
+					//If index.html exists, point to that instead
+					if (f.isDirectory() && fIndex.exists()) f = fIndex;
+					
+					
+					if (!f.isDirectory()) { 
+						try {
+							InputStream file = new FileInputStream(f);
+							//Write header
+							out.print(buildResponseHeader(200, "OK", f.length(), getContentType(f.getPath())));
+							//Flush because we're about to write directly to the OutputStream
+							out.flush();
+				            byte[] buf = new byte[4096];
+				            while (file.available() > 0) os.write(buf, 0, file.read(buf));
+						} catch (FileNotFoundException e) {
+							//Write 404 Error Page
+							out.println(buildResponseHeader(404, "Not Found", "text/html"));
+							out.println("<html><body><h1>404 NOT FOUND</h1></body></html>");
+						}
+					}
 				}
-
-				obj.put("nodes", list);
-				out.print(buildResponseHeader(200, "OK", "application/json"));
-				out.print(obj.toJSONString());
-
 			} else {
 				// Write 400 Error Page
 				out.println(buildResponseHeader(400, "Bad Request", "text/html"));

@@ -21,7 +21,20 @@ class PoolNode {
 				NodeSocket pool = new NodeSocket(new Socket(hostAddress, hostPort));
 				// Submit key for verification
 				key.submit(pool);
-
+				if (pool.is.readInt() != Pool.MSG_ACCEPT) {
+					break;
+				}
+				
+				// Send core count
+				pool.os.writeInt(Runtime.getRuntime().availableProcessors());
+				
+				// Send OS name
+				byte[] osName = System.getProperty("os.name").getBytes();
+				pool.os.writeInt(osName.length);
+				if (osName.length > 0) {
+					pool.os.write(osName);
+				}
+				
 				try {
 					while (true) {
 						// Wait for directives from pool
@@ -40,13 +53,13 @@ class PoolNode {
 							}
 						}
 
+						Communicator comm = Pool.buildCommunicator(pool);
 						try {
 							// Initialize communications with all nodes
-							Communicator comm = Pool.buildCommunicator(pool);
 							comm.runTask(null);
 						} catch (Exception e) {
 							e.printStackTrace();
-							break;
+							comm.close();
 						}
 					}
 				} catch (IOException e) {
